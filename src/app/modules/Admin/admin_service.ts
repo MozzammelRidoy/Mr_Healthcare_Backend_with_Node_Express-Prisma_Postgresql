@@ -5,22 +5,34 @@ const prisma = new PrismaClient();
 const fetchAllAdminFromDB = async (query: any) => {
   const andConditions: Prisma.AdminWhereInput[] = [];
 
+  //   if (query.searchTerm) {
+  //     andConditions.push({
+  //       OR: [
+  //         {
+  //           name: {
+  //             contains: query.searchTerm,
+  //             mode: "insensitive",
+  //           },
+  //         },
+  //         {
+  //           email: {
+  //             contains: query.searchTerm,
+  //             mode: "insensitive",
+  //           },
+  //         },
+  //       ],
+  //     });
+  //   }
+
+  const adminSearchAbleFileds = ["name", "email"];
   if (query.searchTerm) {
     andConditions.push({
-      OR: [
-        {
-          name: {
-            contains: query.searchTerm,
-            mode: "insensitive",
-          },
+      OR: adminSearchAbleFileds.map((filed) => ({
+        [filed]: {
+          contains: query.searchTerm,
+          mode: "insensitive",
         },
-        {
-          email: {
-            contains: query.searchTerm,
-            mode: "insensitive",
-          },
-        },
-      ],
+      })),
     });
   }
 
