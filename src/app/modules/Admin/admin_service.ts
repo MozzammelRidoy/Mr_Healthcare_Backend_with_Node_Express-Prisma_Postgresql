@@ -1,10 +1,12 @@
-import { PrismaClient } from "../../../../generated/prisma";
+import { Prisma, PrismaClient } from "../../../../generated/prisma";
 
 const prisma = new PrismaClient();
 
 const fetchAllAdminFromDB = async (query: any) => {
-  const result = await prisma.admin.findMany({
-    where: {
+  const andConditions: Prisma.AdminWhereInput[] = [];
+
+  if (query.searchTerm) {
+    andConditions.push({
       OR: [
         {
           name: {
@@ -19,7 +21,14 @@ const fetchAllAdminFromDB = async (query: any) => {
           },
         },
       ],
-    },
+    });
+  }
+
+  const whereConditions: Prisma.AdminWhereInput = { AND: andConditions };
+  console.dir(andConditions, { depth: "infinite" });
+
+  const result = await prisma.admin.findMany({
+    where: whereConditions,
   });
   return result;
 };
