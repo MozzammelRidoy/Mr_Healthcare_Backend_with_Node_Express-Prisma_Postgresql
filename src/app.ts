@@ -1,10 +1,11 @@
-import express, { Application, Request, Response } from "express";
+import express, { Application, Request, Response, urlencoded } from "express";
 import cors from "cors";
 import { UserRoutes } from "./app/modules/User/user_route";
 
 const app: Application = express();
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
 app.get("/", async (req: Request, res: Response) => {
