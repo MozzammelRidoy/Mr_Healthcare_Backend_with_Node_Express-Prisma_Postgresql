@@ -48,7 +48,7 @@ const fetchAllAdminFromDB = async (query: any) => {
   }
 
   const whereConditions: Prisma.AdminWhereInput = { AND: andConditions };
-  console.dir(andConditions, { depth: "infinite" });
+  //   console.dir(andConditions, { depth: "infinite" });
 
   const result = await prisma.admin.findMany({
     where: whereConditions,
