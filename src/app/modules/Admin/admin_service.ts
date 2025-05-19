@@ -3,6 +3,7 @@ import { Prisma, PrismaClient } from "../../../../generated/prisma";
 const prisma = new PrismaClient();
 
 const fetchAllAdminFromDB = async (query: any) => {
+  const { searchTerm, ...filterData } = query;
   const andConditions: Prisma.AdminWhereInput[] = [];
 
   //   if (query.searchTerm) {
@@ -31,6 +32,16 @@ const fetchAllAdminFromDB = async (query: any) => {
         [filed]: {
           contains: query.searchTerm,
           mode: "insensitive",
+        },
+      })),
+    });
+  }
+
+  if (Object.keys(filterData).length > 0) {
+    andConditions.push({
+      AND: Object.keys(filterData).map((key) => ({
+        [key]: {
+          equals: filterData[key],
         },
       })),
     });
