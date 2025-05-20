@@ -3,9 +3,30 @@ import { adminSearchAbleFileds } from "./admin_constant";
 
 const prisma = new PrismaClient();
 
+const calculatePagination = (options: {
+  page?: number;
+  limit?: number;
+  sortBy?: string;
+  sortOrder?: string;
+}) => {
+  const page = Number(options.page || 1);
+  const limit = Number(options.limit || 10);
+  const skip = (page - 1) * limit;
+  const sortBy = options.sortBy || "createdAt";
+  const sortOrder = options.sortOrder || "desc";
+
+  return {
+    page,
+    limit,
+    skip,
+    sortBy,
+    sortOrder,
+  };
+};
+
 const fetchAllAdminFromDB = async (query: any, options: any) => {
   const { searchTerm, ...filterData } = query;
-  const { limit, page } = options;
+  const { limit, page, skip, sortBy, sortOrder } = calculatePagination(options);
   const andConditions: Prisma.AdminWhereInput[] = [];
 
   //   if (query.searchTerm) {
@@ -53,8 +74,22 @@ const fetchAllAdminFromDB = async (query: any, options: any) => {
 
   const result = await prisma.admin.findMany({
     where: whereConditions,
-    skip: Number(limit) * (Number(page) - 1),
-    take: Number(limit),
+    // skip: Number(limit) * (Number(page) - 1),
+    skip,
+    // take: Number(limit),
+    take: limit,
+
+    // orderBy:
+    //   sortBy && sortOrder
+    //     ? {
+    //         [sortBy]: sortOrder,
+    //       }
+    //     : {
+    //         createdAt: "desc",
+    //       },
+    orderBy: {
+      [sortBy]: sortOrder,
+    },
   });
   return result;
 };
