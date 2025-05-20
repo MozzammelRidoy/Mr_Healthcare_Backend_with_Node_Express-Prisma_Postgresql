@@ -77,6 +77,17 @@ const fetchAllAdminFromDB = async (query: any, options: any) => {
   return { meta: { page, limit, totalData }, data: result };
 };
 
+// fetch single data.
+const fetchSingleAdmin_ByID_fromDB = async (id: string) => {
+  const result = await prisma.admin.findUnique({
+    where: {
+      id,
+    },
+  });
+
+  return result;
+};
 export const AdminServices = {
   fetchAllAdminFromDB,
+  fetchSingleAdmin_ByID_fromDB,
 };
