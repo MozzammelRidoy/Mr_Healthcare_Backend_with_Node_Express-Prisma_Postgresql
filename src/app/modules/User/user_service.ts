@@ -1,7 +1,6 @@
-import { PrismaClient, UserRole } from "../../../../generated/prisma";
+import { UserRole } from "../../../../generated/prisma";
 import bcrypt from "bcrypt";
-
-const prisma = new PrismaClient();
+import prisma from "../../shared/prisma";
 
 // create admin .
 const createAdmin = async (payload: any) => {
