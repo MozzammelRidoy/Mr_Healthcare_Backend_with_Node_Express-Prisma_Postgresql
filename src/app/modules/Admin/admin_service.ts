@@ -1,9 +1,11 @@
 import { Prisma, PrismaClient } from "../../../../generated/prisma";
+import { adminSearchAbleFileds } from "./admin_constant";
 
 const prisma = new PrismaClient();
 
-const fetchAllAdminFromDB = async (query: any) => {
+const fetchAllAdminFromDB = async (query: any, options: any) => {
   const { searchTerm, ...filterData } = query;
+  const { limit, page } = options;
   const andConditions: Prisma.AdminWhereInput[] = [];
 
   //   if (query.searchTerm) {
@@ -25,7 +27,6 @@ const fetchAllAdminFromDB = async (query: any) => {
   //     });
   //   }
 
-  const adminSearchAbleFileds = ["name", "email"];
   if (query.searchTerm) {
     andConditions.push({
       OR: adminSearchAbleFileds.map((filed) => ({
@@ -52,6 +53,8 @@ const fetchAllAdminFromDB = async (query: any) => {
 
   const result = await prisma.admin.findMany({
     where: whereConditions,
+    skip: Number(limit) * (Number(page) - 1),
+    take: Number(limit),
   });
   return result;
 };
