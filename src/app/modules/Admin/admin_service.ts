@@ -90,9 +90,30 @@ const fetchSingleAdmin_ByID_fromDB = async (id: string) => {
 
 // udpate data.
 const updateAdminDataIntoDB = async (id: string, payload: Partial<Admin>) => {
+  await prisma.admin.findUniqueOrThrow({
+    where: { id },
+  });
+
   const result = await prisma.admin.update({
     where: { id },
     data: payload,
+  });
+
+  return result;
+};
+
+//delete data.
+const deleteAdminDataByIDIntoDB = async (id: string) => {
+  await prisma.admin.findUniqueOrThrow({ where: { id } });
+
+  const result = await prisma.$transaction(async (transactionClient) => {
+    const adminData = await transactionClient.admin.delete({ where: { id } });
+
+    await transactionClient.user.delete({
+      where: { email: adminData.email },
+    });
+
+    return adminData;
   });
 
   return result;
@@ -101,4 +122,5 @@ export const AdminServices = {
   fetchAllAdminFromDB,
   fetchSingleAdmin_ByID_fromDB,
   updateAdminDataIntoDB,
+  deleteAdminDataByIDIntoDB,
 };
