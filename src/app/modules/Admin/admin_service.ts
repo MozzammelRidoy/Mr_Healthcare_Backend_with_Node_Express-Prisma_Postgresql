@@ -1,4 +1,4 @@
-import { Prisma } from "../../../../generated/prisma";
+import { Admin, Prisma } from "../../../../generated/prisma";
 import { adminSearchAbleFileds } from "./admin_constant";
 import { PaginationHelpars } from "./../../../helpars/paginationHelpars";
 import prisma from "../../shared/prisma";
@@ -87,7 +87,18 @@ const fetchSingleAdmin_ByID_fromDB = async (id: string) => {
 
   return result;
 };
+
+// udpate data.
+const updateAdminDataIntoDB = async (id: string, payload: Partial<Admin>) => {
+  const result = await prisma.admin.update({
+    where: { id },
+    data: payload,
+  });
+
+  return result;
+};
 export const AdminServices = {
   fetchAllAdminFromDB,
   fetchSingleAdmin_ByID_fromDB,
+  updateAdminDataIntoDB,
 };
