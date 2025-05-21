@@ -1,4 +1,4 @@
-import { Admin, Prisma } from "../../../../generated/prisma";
+import { Admin, Prisma, UserStatus } from "../../../../generated/prisma";
 import { adminSearchAbleFileds } from "./admin_constant";
 import { PaginationHelpars } from "./../../../helpars/paginationHelpars";
 import prisma from "../../shared/prisma";
@@ -82,6 +82,7 @@ const fetchSingleAdmin_ByID_fromDB = async (id: string) => {
   const result = await prisma.admin.findUnique({
     where: {
       id,
+      isDeleted: false,
     },
   });
 
@@ -91,7 +92,7 @@ const fetchSingleAdmin_ByID_fromDB = async (id: string) => {
 // udpate data.
 const updateAdminDataIntoDB = async (id: string, payload: Partial<Admin>) => {
   await prisma.admin.findUniqueOrThrow({
-    where: { id },
+    where: { id, isDeleted: false },
   });
 
   const result = await prisma.admin.update({
@@ -104,7 +105,7 @@ const updateAdminDataIntoDB = async (id: string, payload: Partial<Admin>) => {
 
 //delete data.
 const deleteAdminDataByIDIntoDB = async (id: string) => {
-  await prisma.admin.findUniqueOrThrow({ where: { id } });
+  await prisma.admin.findUniqueOrThrow({ where: { id, isDeleted: false } });
 
   const result = await prisma.$transaction(async (transactionClient) => {
     const adminData = await transactionClient.admin.delete({ where: { id } });
@@ -118,9 +119,33 @@ const deleteAdminDataByIDIntoDB = async (id: string) => {
 
   return result;
 };
+
+// admin soft delete into db.
+const softDeleteAdminDataByIDIntoDB = async (id: string) => {
+  await prisma.admin.findUniqueOrThrow({ where: { id, isDeleted: false } });
+
+  const result = await prisma.$transaction(async (transactionClient) => {
+    const adminData = await transactionClient.admin.update({
+      where: { id },
+      data: {
+        isDeleted: true,
+      },
+    });
+    await transactionClient.user.update({
+      where: { email: adminData.email },
+      data: {
+        status: UserStatus.DELETED,
+      },
+    });
+    return adminData;
+  });
+
+  return result;
+};
 export const AdminServices = {
   fetchAllAdminFromDB,
   fetchSingleAdmin_ByID_fromDB,
   updateAdminDataIntoDB,
   deleteAdminDataByIDIntoDB,
+  softDeleteAdminDataByIDIntoDB,
 };
