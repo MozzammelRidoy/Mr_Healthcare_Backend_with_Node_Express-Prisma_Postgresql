@@ -3,6 +3,7 @@ import { AdminServices } from "./admin_service";
 import pick from "../../shared/pick";
 import { adminFilterableFields } from "./admin_constant";
 import { sendResponse } from "../../shared/sendResponse";
+import status from "http-status";
 
 // fetch all admin.
 const getAllAdmins = async (req: Request, res: Response) => {
@@ -11,14 +12,14 @@ const getAllAdmins = async (req: Request, res: Response) => {
     const options = pick(req.query, ["limit", "page", "sortBy", "sortOrder"]);
     const result = await AdminServices.fetchAllAdminFromDB(filters, options);
     sendResponse(res, {
-      statusCode: 200,
+      statusCode: status.OK,
       success: true,
       message: "Admin fetched successfully",
       meta: result.meta,
       data: result.data,
     });
   } catch (err) {
-    res.status(400).json({
+    res.status(status.BAD_REQUEST).json({
       success: false,
       message: "Failed to fetch admin",
       error: err,
@@ -32,13 +33,13 @@ const getSingleAdminByID = async (req: Request, res: Response) => {
     const id = req.params.id;
     const result = await AdminServices.fetchSingleAdmin_ByID_fromDB(id);
     sendResponse(res, {
-      statusCode: 200,
+      statusCode: status.OK,
       success: true,
       message: "Admin fetched successfully",
       data: result,
     });
   } catch (err) {
-    res.status(400).json({
+    res.status(status.BAD_REQUEST).json({
       success: false,
       message: "Failed to fetch admin",
       error: err,
@@ -52,13 +53,13 @@ const updateAdmin = async (req: Request, res: Response) => {
     const id = req.params.id;
     const result = await AdminServices.updateAdminDataIntoDB(id, req.body);
     sendResponse(res, {
-      statusCode: 200,
+      statusCode: status.OK,
       success: true,
       message: "Admin updated successfully",
       data: result,
     });
   } catch (err) {
-    res.status(400).json({
+    res.status(status.BAD_REQUEST).json({
       success: false,
       message: "Failed to update admin",
       error: err,
@@ -72,13 +73,13 @@ const deleteAdmin = async (req: Request, res: Response) => {
     const id = req.params.id;
     const result = await AdminServices.deleteAdminDataByIDIntoDB(id);
     sendResponse(res, {
-      statusCode: 200,
+      statusCode: status.OK,
       success: true,
       message: "Admin deleted successfully",
       data: result,
     });
   } catch (err) {
-    res.status(400).json({
+    res.status(status.BAD_REQUEST).json({
       success: false,
       message: "Failed to delete admin",
       error: err,
@@ -92,13 +93,13 @@ const softDeleteAdminDataByID = async (req: Request, res: Response) => {
     const id = req.params.id;
     const result = await AdminServices.softDeleteAdminDataByIDIntoDB(id);
     sendResponse(res, {
-      statusCode: 200,
+      statusCode: status.OK,
       success: true,
       message: "Admin deleted successfully",
       data: result,
     });
   } catch (err) {
-    res.status(400).json({
+    res.status(status.BAD_REQUEST).json({
       success: false,
       message: "Failed to delete admin",
       error: err,

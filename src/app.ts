@@ -1,7 +1,6 @@
-import express, { Application, Request, Response, urlencoded } from "express";
+import express, { Application, Request, Response } from "express";
 import cors from "cors";
-import { UserRoutes } from "./app/modules/User/user_route";
-import { AdminRoutes } from "./app/modules/Admin/admin_route";
+import router from "./app/routes";
 
 const app: Application = express();
 
@@ -13,7 +12,6 @@ app.get("/", async (req: Request, res: Response) => {
   res.send({ message: "Mr Healthcare server is running" });
 });
 
-app.use("/api/v1/user", UserRoutes);
-app.use("/api/v1/admin", AdminRoutes);
+app.use("/api/v1", router);
 
 export default app;
