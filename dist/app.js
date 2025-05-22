@@ -14,8 +14,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
-const user_route_1 = require("./app/modules/User/user_route");
-const admin_route_1 = require("./app/modules/Admin/admin_route");
+const routes_1 = __importDefault(require("./app/routes"));
+const globalerrorhandler_1 = __importDefault(require("./app/middleware/globalerrorhandler"));
+const notFound_1 = __importDefault(require("./app/middleware/notFound"));
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
@@ -23,6 +24,7 @@ app.use((0, cors_1.default)());
 app.get("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.send({ message: "Mr Healthcare server is running" });
 }));
-app.use("/api/v1/user", user_route_1.UserRoutes);
-app.use("/api/v1/admin", admin_route_1.AdminRoutes);
+app.use("/api/v1", routes_1.default);
+app.use(globalerrorhandler_1.default);
+app.use(notFound_1.default);
 exports.default = app;

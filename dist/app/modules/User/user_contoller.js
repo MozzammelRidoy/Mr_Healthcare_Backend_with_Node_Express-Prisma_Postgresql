@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserControllers = void 0;
 const user_service_1 = require("./user_service");
 // crate admin.
-const createAdmin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const createAdmin = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         //   console.log(req.body);
         const result = yield user_service_1.UserServices.createAdmin(req.body);
@@ -23,11 +23,7 @@ const createAdmin = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         });
     }
     catch (err) {
-        res.status(500).json({
-            success: false,
-            message: (err === null || err === void 0 ? void 0 : err.name) || "something went wrong",
-            error: err,
-        });
+        next(err);
     }
 });
 exports.UserControllers = {

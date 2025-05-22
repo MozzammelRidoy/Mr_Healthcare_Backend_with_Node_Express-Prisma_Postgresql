@@ -24,9 +24,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AdminServices = void 0;
+const prisma_1 = require("../../../../generated/prisma");
 const admin_constant_1 = require("./admin_constant");
 const paginationHelpars_1 = require("./../../../helpars/paginationHelpars");
-const prisma_1 = __importDefault(require("../../shared/prisma"));
+const prisma_2 = __importDefault(require("../../shared/prisma"));
 const fetchAllAdminFromDB = (query, options) => __awaiter(void 0, void 0, void 0, function* () {
     const { searchTerm } = query, filterData = __rest(query, ["searchTerm"]);
     const { limit, page, skip, sortBy, sortOrder } = paginationHelpars_1.PaginationHelpars.calculatePagination(options);
@@ -68,9 +69,10 @@ const fetchAllAdminFromDB = (query, options) => __awaiter(void 0, void 0, void 0
             })),
         });
     }
+    andConditions.push({ isDeleted: false });
     const whereConditions = { AND: andConditions };
     //   console.dir(andConditions, { depth: "infinite" });
-    const result = yield prisma_1.default.admin.findMany({
+    const result = yield prisma_2.default.admin.findMany({
         where: whereConditions,
         // skip: Number(limit) * (Number(page) - 1),
         skip,
@@ -88,8 +90,68 @@ const fetchAllAdminFromDB = (query, options) => __awaiter(void 0, void 0, void 0
             [sortBy]: sortOrder,
         },
     });
+    const totalData = yield prisma_2.default.admin.count({
+        where: whereConditions,
+    });
+    return { meta: { page, limit, totalData }, data: result };
+});
+// fetch single data.
+const fetchSingleAdmin_ByID_fromDB = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield prisma_2.default.admin.findUnique({
+        where: {
+            id,
+            isDeleted: false,
+        },
+    });
+    return result;
+});
+// udpate data.
+const updateAdminDataIntoDB = (id, payload) => __awaiter(void 0, void 0, void 0, function* () {
+    yield prisma_2.default.admin.findUniqueOrThrow({
+        where: { id, isDeleted: false },
+    });
+    const result = yield prisma_2.default.admin.update({
+        where: { id },
+        data: payload,
+    });
+    return result;
+});
+//delete data.
+const deleteAdminDataByIDIntoDB = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    yield prisma_2.default.admin.findUniqueOrThrow({ where: { id, isDeleted: false } });
+    const result = yield prisma_2.default.$transaction((transactionClient) => __awaiter(void 0, void 0, void 0, function* () {
+        const adminData = yield transactionClient.admin.delete({ where: { id } });
+        yield transactionClient.user.delete({
+            where: { email: adminData.email },
+        });
+        return adminData;
+    }));
+    return result;
+});
+// admin soft delete into db.
+const softDeleteAdminDataByIDIntoDB = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    yield prisma_2.default.admin.findUniqueOrThrow({ where: { id, isDeleted: false } });
+    const result = yield prisma_2.default.$transaction((transactionClient) => __awaiter(void 0, void 0, void 0, function* () {
+        const adminData = yield transactionClient.admin.update({
+            where: { id },
+            data: {
+                isDeleted: true,
+            },
+        });
+        yield transactionClient.user.update({
+            where: { email: adminData.email },
+            data: {
+                status: prisma_1.UserStatus.DELETED,
+            },
+        });
+        return adminData;
+    }));
     return result;
 });
 exports.AdminServices = {
     fetchAllAdminFromDB,
+    fetchSingleAdmin_ByID_fromDB,
+    updateAdminDataIntoDB,
+    deleteAdminDataByIDIntoDB,
+    softDeleteAdminDataByIDIntoDB,
 };

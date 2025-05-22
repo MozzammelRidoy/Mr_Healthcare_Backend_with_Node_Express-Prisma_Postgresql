@@ -1,8 +1,8 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { UserServices } from "./user_service";
 
 // crate admin.
-const createAdmin = async (req: Request, res: Response) => {
+const createAdmin = async (req: Request, res: Response, next: NextFunction) => {
   try {
     //   console.log(req.body);
     const result = await UserServices.createAdmin(req.body);
@@ -12,11 +12,7 @@ const createAdmin = async (req: Request, res: Response) => {
       data: result,
     });
   } catch (err) {
-    res.status(500).json({
-      success: false,
-      message: err?.name || "something went wrong",
-      error: err,
-    });
+    next(err);
   }
 };
 
