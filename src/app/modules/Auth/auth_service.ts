@@ -27,9 +27,21 @@ const loginUserIntoDB = async (payload: {
       algorithm: "HS256",
     }
   );
-  console.log(accessToken);
 
-  //   console.log(isCurrectPassword);
+  const refreshToken = jwt.sign(
+    { email: userData.email, id: userData.id, role: userData.role },
+    "abcdefgh",
+    {
+      expiresIn: "30d",
+      algorithm: "HS256",
+    }
+  );
+
+  return {
+    accessToken,
+    refreshToken,
+    needPasswordChange: userData.needsPasswordChange,
+  };
 };
 
 export const AuthServices = {
