@@ -18,98 +18,74 @@ const pick_1 = __importDefault(require("../../shared/pick"));
 const admin_constant_1 = require("./admin_constant");
 const sendResponse_1 = require("../../shared/sendResponse");
 const http_status_1 = __importDefault(require("http-status"));
+const catchAsync_1 = __importDefault(require("../../shared/catchAsync"));
 // fetch all admin.
-const getAllAdmins = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const filters = (0, pick_1.default)(req.query, admin_constant_1.adminFilterableFields);
-        const options = (0, pick_1.default)(req.query, ["limit", "page", "sortBy", "sortOrder"]);
-        const result = yield admin_service_1.AdminServices.fetchAllAdminFromDB(filters, options);
-        (0, sendResponse_1.sendResponse)(res, {
-            statusCode: http_status_1.default.OK,
-            success: true,
-            message: "Admin fetched successfully",
-            meta: result.meta,
-            data: result.data,
-        });
-    }
-    catch (err) {
-        next(err);
-    }
-});
+const getAllAdmins = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const filters = (0, pick_1.default)(req.query, admin_constant_1.adminFilterableFields);
+    const options = (0, pick_1.default)(req.query, ["limit", "page", "sortBy", "sortOrder"]);
+    const result = yield admin_service_1.AdminServices.fetchAllAdminFromDB(filters, options);
+    (0, sendResponse_1.sendResponse)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: "Admin fetched successfully",
+        meta: result.meta,
+        data: result.data,
+    });
+}));
 // get single admin.
-const getSingleAdminByID = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const id = req.params.id;
-        const result = yield admin_service_1.AdminServices.fetchSingleAdmin_ByID_fromDB(id);
-        (0, sendResponse_1.sendResponse)(res, {
-            statusCode: http_status_1.default.OK,
-            success: true,
-            message: "Admin fetched successfully",
-            data: result,
-        });
-    }
-    catch (err) {
-        next(err);
-    }
-});
+const getSingleAdminByID = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const id = req.params.id;
+    const result = yield admin_service_1.AdminServices.fetchSingleAdmin_ByID_fromDB(id);
+    (0, sendResponse_1.sendResponse)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: "Admin fetched successfully",
+        data: result,
+    });
+}));
 // update admin.
-const updateAdmin = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const id = req.params.id;
-        const result = yield admin_service_1.AdminServices.updateAdminDataIntoDB(id, req.body);
-        (0, sendResponse_1.sendResponse)(res, {
-            statusCode: http_status_1.default.OK,
-            success: true,
-            message: "Admin updated successfully",
-            data: result,
-        });
-    }
-    catch (err) {
-        next(err);
-    }
-});
+const updateAdmin = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const id = req.params.id;
+    const result = yield admin_service_1.AdminServices.updateAdminDataIntoDB(id, req.body);
+    (0, sendResponse_1.sendResponse)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: "Admin updated successfully",
+        data: result,
+    });
+}));
 //delete admin.
-const deleteAdmin = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const id = req.params.id;
-        const result = yield admin_service_1.AdminServices.deleteAdminDataByIDIntoDB(id);
-        (0, sendResponse_1.sendResponse)(res, {
-            statusCode: http_status_1.default.OK,
-            success: true,
-            message: "Admin deleted successfully",
-            data: result,
-        });
-    }
-    catch (err) {
-        // res.status(status.BAD_REQUEST).json({
-        //   success: false,
-        //   message: "Failed to delete admin",
-        //   error: err,
-        // });
-        next(err);
-    }
-});
+const deleteAdmin = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const id = req.params.id;
+    const result = yield admin_service_1.AdminServices.deleteAdminDataByIDIntoDB(id);
+    (0, sendResponse_1.sendResponse)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: "Admin deleted successfully",
+        data: result,
+    });
+    // res.status(status.BAD_REQUEST).json({
+    //   success: false,
+    //   message: "Failed to delete admin",
+    //   error: err,
+    // });
+}));
 // export all controllers.
-const softDeleteAdminDataByID = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const id = req.params.id;
-        const result = yield admin_service_1.AdminServices.softDeleteAdminDataByIDIntoDB(id);
-        (0, sendResponse_1.sendResponse)(res, {
-            statusCode: http_status_1.default.OK,
-            success: true,
-            message: "Admin deleted successfully",
-            data: result,
-        });
-    }
-    catch (err) {
-        // res.status(status.BAD_REQUEST).json({
-        //   success: false,
-        //   message: "Failed to delete admin",
-        //   error: err,
-        // });
-        next(err);
-    }
-});
+const softDeleteAdminDataByID = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const id = req.params.id;
+    const result = yield admin_service_1.AdminServices.softDeleteAdminDataByIDIntoDB(id);
+    (0, sendResponse_1.sendResponse)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: "Admin deleted successfully",
+        data: result,
+    });
+    // res.status(status.BAD_REQUEST).json({
+    //   success: false,
+    //   message: "Failed to delete admin",
+    //   error: err,
+    // });
+}));
 exports.AdminControllers = {
     getAllAdmins,
     getSingleAdminByID,
