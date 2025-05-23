@@ -18,6 +18,11 @@ const generateToken = (
   return jwt.sign(jwtPayload, jwtSecret, options);
 };
 
+const verifyToken = (token: string, jwtSecret: Secret): TJwtPayload => {
+  return jwt.verify(token, jwtSecret) as TJwtPayload;
+};
+
 export const JwtHelpers = {
   generateToken,
+  verifyToken,
 };

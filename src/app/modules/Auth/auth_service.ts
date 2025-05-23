@@ -44,12 +44,12 @@ const refreshTokenByAccessToken = async (token: string) => {
   let decodedToken: JwtPayload;
 
   try {
-    decodedToken = jwt.verify(token, "abcdefgh") as JwtPayload;
+    decodedToken = JwtHelpers.verifyToken(token, "abcdefgh");
   } catch (err) {
     throw new Error("You are not authorized");
   }
   const userData = await prisma.user.findUniqueOrThrow({
-    where: { email: decodedToken.email },
+    where: { email: decodedToken.email, status: "ACTIVE" },
   });
 
   const accessToken = JwtHelpers.generateToken(
